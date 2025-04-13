@@ -1,1 +1,1 @@
-# StockFlow
+# InventoryManager
