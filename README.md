@@ -102,7 +102,7 @@ Features
 
 ### Visualization and Mapping
 
--   **Interactive SVG Warehouse Layout**:
+-   **Interactive 2D SVG Warehouse Layout**:
 
     -   Customizable 2D vector maps generated from user-provided sketches or blueprints.
 
@@ -119,6 +119,20 @@ Features
     -   Color-coded updates for new, modified, or vacated spaces.
 
     -   Exportable for printing or sharing with warehouse associates.
+
+-   **Interactive 3D Warehouse Model**:
+
+    -   Generates a 3D mockup of the warehouse based on the 2D sketch or manual input.
+
+    -   Supports navigation via mouse/keyboard (desktop) or touch (mobile).
+
+    -   Displays item locations, quantities, and conditions in 3D space.
+
+    -   Highlights paths for picking or restocking with AI-optimized routes.
+
+    -   Toggles between 2D and 3D views for flexibility.
+
+    -   Exportable as OBJ or GLTF for external use (e.g., VR/AR integrations).
 
 -   **Charting and Graphing**:
 
@@ -220,7 +234,7 @@ Tailored features for entrepreneurs running resale businesses (e.g., storage uni
 
 -   **Compact Layouts**:
 
-    -   Generates SVG layouts for small spaces like storage units.
+    -   Generates 2D SVG and 3D models for small spaces like storage units.
 
     -   Optimizes storage for high-turnover items.
 
@@ -311,7 +325,9 @@ Architecture
 
     -   Mobile: Flutter for cross-platform iOS and Android support.
 
-    -   SVG Rendering: Custom Rust library with WebView for interactive maps.
+    -   2D SVG Rendering: Custom Rust library with WebView for interactive maps.
+
+    -   3D Rendering: Rust with WebGL (via Tauri) and Flutter ThreeDart for mobile.
 
 -   **Database**: SQLite (default) with PostgreSQL option
 
@@ -343,7 +359,7 @@ Architecture
 
 -   **Configuration Files**:
 
-    -   YAML-based configs for warehouse layouts, user roles, and settings.
+    -   YAML-based configs for warehouse layouts (2D and 3D), user roles, and settings.
 
     -   Enables rapid customization without code changes.
 
@@ -458,7 +474,7 @@ Usage
 
 -   **Dashboard**:
 
-    -   View the SVG warehouse map (clickable for details).
+    -   View the 2D SVG or 3D warehouse model (clickable/navigable for details).
 
     -   Access AI-driven charts and metrics (e.g., stock levels, sales trends, optimization suggestions).
 
@@ -492,6 +508,12 @@ Usage
 
     -   View basic details (Associates) or advanced metrics (Managers).
 
+-   **3D Navigation**:
+
+    -   Explore a simplified 3D warehouse model with touch controls.
+
+    -   Tap items for details or suggested actions.
+
 -   **Notifications**:
 
     -   Receive alerts for low stock, discrepancies, or AI-driven tasks.
@@ -508,15 +530,15 @@ Usage
 
 3.  Use the built-in editor to:
 
-    -   Trace the sketch into an SVG map.
+    -   Trace the sketch into a 2D SVG map and generate a 3D model.
 
-    -   Define clickable areas (e.g., aisles, shelves).
+    -   Define clickable/navigable areas (e.g., aisles, shelves).
 
     -   Assign location names and metadata.
 
-4.  Customize colors, labels, and interactivity.
+4.  Customize colors, labels, and interactivity for both 2D and 3D views.
 
-5.  Save and deploy the map to all users.
+5.  Save and deploy the layouts to all users.
 
 ### Managing Inventory
 
@@ -536,7 +558,7 @@ Usage
 
     -   Scan pallets to new locations.
 
-    -   Update the SVG map and logs automatically.
+    -   Update the 2D/3D layouts and logs automatically.
 
 -   **Monitor Health**:
 
@@ -569,11 +591,12 @@ InventoryManager/
 │   ├── inventory/          # Inventory tracking and logging (Rust)
 │   ├── analytics/          # Charting and metrics (Rust)
 │   ├── ai/                 # AI-driven features (Python)
+│   ├── viz/                # 2D/3D visualization (Rust)
 │   └── db/                 # SQLite/PostgreSQL handlers (Rust)
 ├── frontend/               # UI components
 │   ├── tauri/              # Desktop app (Rust + WebView)
 │   └── flutter/            # Mobile app (Dart)
-├── assets/                 # SVGs, logos, templates
+├── assets/                 # SVGs, 3D models, logos, templates
 ├── configs/                # YAML configs for layouts, roles
 └── tests/                  # Unit and integration tests
 ```
@@ -608,15 +631,15 @@ InventoryManager/
 Roadmap
 -------
 
--   **Q2 2025**: Beta release with core features (inventory tracking, SVG maps, user tiers).
+-   **Q2 2025**: Beta release with core features (inventory tracking, 2D SVG maps, user tiers).
 
--   **Q3 2025**: Add AI optimization (Python-powered) and small-scale business mode.
+-   **Q3 2025**: Add AI optimization (Python-powered), 3D models, and small-scale business mode.
 
 -   **Q4 2025**: Support multi-location sync and advanced analytics.
 
 -   **2026**: Integrate with third-party platforms (e.g., Shopify, QuickBooks).
 
--   **Long-Term**: Open-source select modules, explore cloud-hybrid mode.
+-   **Long-Term**: Open-source select modules, explore cloud-hybrid mode and VR/AR support.
 
 License
 -------
