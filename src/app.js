@@ -1,5 +1,5 @@
 import { invoke } from '@tauri-apps/api/tauri';
-import { SVG } from '@svgdotjs/svg.js';
+  import { SVG } from '@svgdotjs/svg.js';
 
 // Initialize 2D SVG map
 const draw = SVG().addTo('#map-2d').size('100%', '100%');
