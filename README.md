@@ -1,7 +1,7 @@
 InventoryManager
 ================
 
-InventoryManager is a robust, modular, and highly customizable inventory management software designed to streamline warehouse and storage operations for businesses of all sizes---from small-scale resale operations in storage units to large-scale, multi-location enterprises. Built with flexibility, security, and scalability in mind, InventoryManager addresses the chaos of traditional inventory tracking by combining intuitive interfaces, real-time data visualization, and advanced analytics. It supports both desktop and mobile applications, ensuring secure access to inventory data without relying on web-based portals to mitigate security risks.
+InventoryManager is a robust, modular, and highly customizable inventory management software designed to streamline warehouse and storage operations for businesses of all sizes---from small-scale resale operations in storage units to large-scale, multi-location enterprises. Built with flexibility, security, and scalability in mind, InventoryManager addresses the chaos of traditional inventory tracking by combining intuitive interfaces, real-time data visualization, and advanced AI-driven analytics. It supports both desktop and mobile applications, ensuring secure access to inventory data without relying on web-based portals to mitigate security risks.
 
 Table of Contents
 -----------------
@@ -170,7 +170,7 @@ InventoryManager implements a three-tier access system to ensure security and ap
 
 -   **Custom Reports**: Generate reports on demand (e.g., damaged items, low stock, top performers).
 
--   **Predictive Analytics**: Forecasts inventory needs based on historical data and sales patterns.
+-   **Predictive Analytics**: Forecasts inventory needs based on historical data and sales patterns, powered by AI.
 
 -   **Export Options**: Supports CSV, PDF, and Excel formats for reports and data sharing.
 
@@ -252,6 +252,12 @@ Tailored features for entrepreneurs running resale businesses (e.g., storage uni
 
     -   Suggests root causes based on log patterns.
 
+-   **AI Implementation**:
+
+    -   Powered by Python for advanced machine learning models (e.g., clustering, time-series forecasting).
+
+    -   Seamlessly integrated with the Rust core via PyO3 for high performance.
+
 ### Security and Modularity
 
 -   **Offline-First Design**:
@@ -289,7 +295,15 @@ Architecture
 
     -   Chosen for performance, memory safety, and cross-platform compatibility.
 
-    -   Handles inventory logic, barcode processing, and AI-driven analytics.
+    -   Handles inventory logic, barcode processing, and core operations.
+
+-   **AI Module**: Python
+
+    -   Powers AI-driven features like optimization, predictive analytics, and anomaly detection.
+
+    -   Uses libraries like TensorFlow, scikit-learn, and Pandas for data processing.
+
+    -   Integrated with Rust via PyO3 for seamless, high-performance execution.
 
 -   **Frontend**:
 
@@ -304,10 +318,6 @@ Architecture
     -   SQLite for single-location setups and small businesses.
 
     -   PostgreSQL for multi-location enterprises with high data volumes.
-
--   **AI Module**: Custom Rust-based library interfacing with Nimbus.ai
-
-    -   Processes inventory data for optimization and predictions.
 
 -   **Barcode/QR Code Handling**: ZBar and QrCodeGen libraries
 
@@ -343,12 +353,20 @@ Architecture
 
     -   Ensures real-time updates across devices and locations.
 
+-   **AI Modularity**:
+
+    -   Python AI components can be updated or swapped without affecting the Rust core.
+
+    -   Supports custom models or third-party AI services via configuration.
+
 Installation
 ------------
 
 ### Prerequisites
 
 -   **Rust**: Stable channel (v1.65+).
+
+-   **Python**: v3.8+ (for AI module).
 
 -   **Node.js**: v16+ (for Tauri frontend dependencies).
 
@@ -361,6 +379,10 @@ Installation
     -   PostgreSQL v14+ (for enterprise setups).
 
     -   Redis v6+ (for multi-location sync).
+
+-   **Python Dependencies**:
+
+    -   Install via requirements.txt (e.g., TensorFlow, scikit-learn, Pandas).
 
 -   **OS Support**:
 
@@ -385,20 +407,26 @@ Installation
     cargo build --release
     ```
 
-3.  Install frontend dependencies:
+3.  Install Python dependencies:
+
+    ```
+    pip install -r backend/ai/requirements.txt
+    ```
+
+4.  Install frontend dependencies:
 
     ```
     cd frontend/tauri
     npm install
     ```
 
-4.  Build the desktop app:
+5.  Build the desktop app:
 
     ```
     cargo tauri build
     ```
 
-5.  Build the mobile app:
+6.  Build the mobile app:
 
     ```
     cd frontend/flutter
@@ -432,7 +460,7 @@ Usage
 
     -   View the SVG warehouse map (clickable for details).
 
-    -   Access charts and metrics (e.g., stock levels, sales trends).
+    -   Access AI-driven charts and metrics (e.g., stock levels, sales trends, optimization suggestions).
 
     -   Manage inventory via list-style data tables.
 
@@ -466,7 +494,7 @@ Usage
 
 -   **Notifications**:
 
-    -   Receive alerts for low stock, discrepancies, or tasks.
+    -   Receive alerts for low stock, discrepancies, or AI-driven tasks.
 
 -   **Minimal Mode**:
 
@@ -514,7 +542,7 @@ Usage
 
     -   Check dashboards for low stock, merges, or damage alerts.
 
-    -   Review AI suggestions for optimization.
+    -   Review AI suggestions for optimization (e.g., move high-demand items).
 
 Development
 -----------
@@ -537,11 +565,11 @@ We welcome contributions! Please follow these steps:
 
 ```
 InventoryManager/
-├── backend/                # Rust core logic
-│   ├── inventory/          # Inventory tracking and logging
-│   ├── analytics/          # Charting and metrics
-│   ├── ai/                 # Nimbus.ai integration
-│   └── db/                 # SQLite/PostgreSQL handlers
+├── backend/                # Core logic
+│   ├── inventory/          # Inventory tracking and logging (Rust)
+│   ├── analytics/          # Charting and metrics (Rust)
+│   ├── ai/                 # AI-driven features (Python)
+│   └── db/                 # SQLite/PostgreSQL handlers (Rust)
 ├── frontend/               # UI components
 │   ├── tauri/              # Desktop app (Rust + WebView)
 │   └── flutter/            # Mobile app (Dart)
@@ -552,10 +580,17 @@ InventoryManager/
 
 ### Testing
 
--   Run unit tests:
+-   Run Rust unit tests:
 
     ```
     cargo test
+    ```
+
+-   Run Python AI tests:
+
+    ```
+    cd backend/ai
+    pytest
     ```
 
 -   Run integration tests:
@@ -575,13 +610,13 @@ Roadmap
 
 -   **Q2 2025**: Beta release with core features (inventory tracking, SVG maps, user tiers).
 
--   **Q3 2025**: Add AI optimization and small-scale business mode.
+-   **Q3 2025**: Add AI optimization (Python-powered) and small-scale business mode.
 
 -   **Q4 2025**: Support multi-location sync and advanced analytics.
 
 -   **2026**: Integrate with third-party platforms (e.g., Shopify, QuickBooks).
 
--   **Long-Term**: Open-source select modules, expand to cloud-hybrid mode.
+-   **Long-Term**: Open-source select modules, explore cloud-hybrid mode.
 
 License
 -------
@@ -595,7 +630,7 @@ Contact
 
 -   **GitHub**: https://github.com/the-real-kodoninja
 
--   **Email**: kodoninja@kodoverse.com
+-   **Email**: contact@kodoverse.com
 
 -   **Issues**: https://github.com/the-real-kodoninja/InventoryManager/issues
 
