@@ -11,23 +11,10 @@ import {
 	WebGLCoordinateSystem
 } from 'three';
 
-/**
- * Utility class for creating instances of {@link LightProbe}.
- *
- * @hideconstructor
- */
 class LightProbeGenerator {
 
-	/**
-	 * Creates a light probe from the given (radiance) environment map.
-	 * The method expects that the environment map is represented as a cube texture.
-	 *
-	 * @param {CubeTexture} cubeTexture - The environment map.
-	 * @return {LightProbe} The created light probe.
-	 */
+	// https://www.ppsloan.org/publications/StupidSH36.pdf
 	static fromCubeTexture( cubeTexture ) {
-
-		// https://www.ppsloan.org/publications/StupidSH36.pdf
 
 		let totalWeight = 0;
 
@@ -112,7 +99,7 @@ class LightProbeGenerator {
 				// evaluate SH basis functions in direction dir
 				SphericalHarmonics3.getBasisAt( dir, shBasis );
 
-				// accumulate
+				// accummuulate
 				for ( let j = 0; j < 9; j ++ ) {
 
 					shCoefficients[ j ].x += shBasis[ j ] * color.r * weight;
@@ -140,21 +127,9 @@ class LightProbeGenerator {
 
 	}
 
-	/**
-	 * Creates a light probe from the given (radiance) environment map.
-	 * The method expects that the environment map is represented as a cube render target.
-	 *
-	 * The cube render target must be in RGBA so `cubeRenderTarget.texture.format` must be
-	 * set to {@link RGBAFormat}.
-	 *
-	 * @async
-	 * @param {WebGPURenderer|WebGLRenderer} renderer - The renderer.
-	 * @param {CubeRenderTarget|WebGLCubeRenderTarget} cubeRenderTarget - The environment map.
-	 * @return {Promise<LightProbe>} A Promise that resolves with the created light probe.
-	 */
 	static async fromCubeRenderTarget( renderer, cubeRenderTarget ) {
 
-		const flip = renderer.coordinateSystem === WebGLCoordinateSystem ? - 1 : 1;
+		const flip = renderer.coordinateSystem === WebGLCoordinateSystem ? -1 : 1;
 
 		// The renderTarget must be set to RGBA in order to make readRenderTargetPixels works
 		let totalWeight = 0;
@@ -267,7 +242,7 @@ class LightProbeGenerator {
 				// evaluate SH basis functions in direction dir
 				SphericalHarmonics3.getBasisAt( dir, shBasis );
 
-				// accumulate
+				// accummuulate
 				for ( let j = 0; j < 9; j ++ ) {
 
 					shCoefficients[ j ].x += shBasis[ j ] * color.r * weight;

@@ -1,11 +1,7 @@
-/** @module BlendShader */
-
 /**
- * Blends two textures.
- *
- * @constant
- * @type {ShaderMaterial~Shader}
+ * Blend two textures
  */
+
 const BlendShader = {
 
 	name: 'BlendShader',

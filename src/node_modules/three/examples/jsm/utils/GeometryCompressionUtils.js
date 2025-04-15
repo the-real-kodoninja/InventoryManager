@@ -1,3 +1,10 @@
+/**
+ * Octahedron and Quantization encodings based on work by:
+ *
+ * @link https://github.com/tsherif/mesh-quantization-example
+ *
+ */
+
 import {
 	BufferAttribute,
 	Matrix3,
@@ -5,15 +12,14 @@ import {
 	Vector3
 } from 'three';
 
-/** @module GeometryCompressionUtils */
 
-// Octahedron and Quantization encodings based on work by: https://github.com/tsherif/mesh-quantization-example
 
 /**
- * Compressed the given geometry's `normal` attribute by the selected encode method.
+ * Make the input geometry's normal attribute encoded and compressed by 3 different methods.
  *
- * @param {BufferGeometry} geometry - The geometry whose normals should be compressed.
- * @param {('DEFAULT'|'OCT1Byte'|'OCT2Byte'|'ANGLES')} encodeMethod - The compression method.
+ * @param {THREE.BufferGeometry} geometry
+ * @param {String} encodeMethod		"DEFAULT" || "OCT1Byte" || "OCT2Byte" || "ANGLES"
+ *
  */
 function compressNormals( geometry, encodeMethod ) {
 
@@ -21,7 +27,7 @@ function compressNormals( geometry, encodeMethod ) {
 
 	if ( ! normal ) {
 
-		console.error( 'THREE.GeometryCompressionUtils.compressNormals(): Geometry must contain normal attribute.' );
+		console.error( 'Geometry must contain normal attribute. ' );
 
 	}
 
@@ -29,7 +35,7 @@ function compressNormals( geometry, encodeMethod ) {
 
 	if ( normal.itemSize != 3 ) {
 
-		console.error( 'THREE.GeometryCompressionUtils.compressNormals(): normal.itemSize is not 3, which cannot be encoded.' );
+		console.error( 'normal.itemSize is not 3, which cannot be encoded. ' );
 
 	}
 
@@ -57,10 +63,11 @@ function compressNormals( geometry, encodeMethod ) {
 
 	} else if ( encodeMethod == 'OCT1Byte' ) {
 
-
-		// It is not recommended to use 1-byte octahedron normals encoding unless you want to extremely reduce the memory usage
-		// As it makes vertex data not aligned to a 4 byte boundary which may harm some WebGL implementations and sometimes the normal distortion is visible
-		// Please refer to @zeux 's comments in https://github.com/mrdoob/three.js/pull/18208
+		/**
+		* It is not recommended to use 1-byte octahedron normals encoding unless you want to extremely reduce the memory usage
+		* As it makes vertex data not aligned to a 4 byte boundary which may harm some WebGL implementations and sometimes the normal distortion is visible
+		* Please refer to @zeux 's comments in https://github.com/mrdoob/three.js/pull/18208
+		*/
 
 		result = new Int8Array( count * 2 );
 
@@ -120,18 +127,20 @@ function compressNormals( geometry, encodeMethod ) {
 
 }
 
+
 /**
- * Compressed the given geometry's `position` attribute.
- *
- * @param {BufferGeometry} geometry - The geometry whose position values should be compressed.
- */
+	 * Make the input geometry's position attribute encoded and compressed.
+	 *
+	 * @param {THREE.BufferGeometry} geometry
+	 *
+	 */
 function compressPositions( geometry ) {
 
 	const position = geometry.attributes.position;
 
 	if ( ! position ) {
 
-		console.error( 'THREE.GeometryCompressionUtils.compressPositions(): Geometry must contain position attribute.' );
+		console.error( 'Geometry must contain position attribute. ' );
 
 	}
 
@@ -139,7 +148,7 @@ function compressPositions( geometry ) {
 
 	if ( position.itemSize != 3 ) {
 
-		console.error( 'THREE.GeometryCompressionUtils.compressPositions(): position.itemSize is not 3, which cannot be packed.' );
+		console.error( 'position.itemSize is not 3, which cannot be packed. ' );
 
 	}
 
@@ -162,9 +171,10 @@ function compressPositions( geometry ) {
 }
 
 /**
- * Compressed the given geometry's `uv` attribute.
+ * Make the input geometry's uv attribute encoded and compressed.
  *
- * @param {BufferGeometry} geometry - The geometry whose texture coordinates should be compressed.
+ * @param {THREE.BufferGeometry} geometry
+ *
  */
 function compressUvs( geometry ) {
 
@@ -172,7 +182,7 @@ function compressUvs( geometry ) {
 
 	if ( ! uvs ) {
 
-		console.error( 'THREE.GeometryCompressionUtils.compressUvs(): Geometry must contain uv attribute.' );
+		console.error( 'Geometry must contain uv attribute. ' );
 
 	}
 

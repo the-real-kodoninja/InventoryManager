@@ -4,14 +4,10 @@ import {
 	Matrix4
 } from 'three';
 
-/** @module VelocityShader */
-
 /**
- * Mesh velocity shader by @bhouston.
- *
- * @constant
- * @type {ShaderMaterial~Shader}
+ * Mesh Velocity Shader @bhouston
  */
+
 const VelocityShader = {
 
 	name: 'VelocityShader',

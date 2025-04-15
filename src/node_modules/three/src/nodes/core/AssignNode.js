@@ -2,12 +2,6 @@ import TempNode from '../core/TempNode.js';
 import { addMethodChaining, nodeProxy } from '../tsl/TSLCore.js';
 import { vectorComponents } from '../core/constants.js';
 
-/**
- * These node represents an assign operation. Meaning a node is assigned
- * to another node.
- *
- * @augments TempNode
- */
 class AssignNode extends TempNode {
 
 	static get type() {
@@ -16,38 +10,15 @@ class AssignNode extends TempNode {
 
 	}
 
-	/**
-	 * Constructs a new assign node.
-	 *
-	 * @param {Node} targetNode - The target node.
-	 * @param {Node} sourceNode - The source type.
-	 */
 	constructor( targetNode, sourceNode ) {
 
 		super();
 
-		/**
-		 * The target node.
-		 *
-		 * @type {Node}
-		 */
 		this.targetNode = targetNode;
-
-		/**
-		 * The source node.
-		 *
-		 * @type {Node}
-		 */
 		this.sourceNode = sourceNode;
 
 	}
 
-	/**
-	 * Whether this node is used more than once in context of other nodes. This method
-	 * is overwritten since it always returns `false` (assigns are unique).
-	 *
-	 * @return {boolean} A flag that indicates if there is more than one dependency to other nodes. Always `false`.
-	 */
 	hasDependencies() {
 
 		return false;
@@ -60,13 +31,6 @@ class AssignNode extends TempNode {
 
 	}
 
-	/**
-	 * Whether a split is required when assigning source to target. This can happen when the component length of
-	 * target and source data type does not match.
-	 *
-	 * @param {NodeBuilder} builder - The current node builder.
-	 * @return {boolean} Whether a split is required when assigning source to target.
-	 */
 	needsSplitAssign( builder ) {
 
 		const { targetNode } = this;
@@ -74,9 +38,9 @@ class AssignNode extends TempNode {
 		if ( builder.isAvailable( 'swizzleAssign' ) === false && targetNode.isSplitNode && targetNode.components.length > 1 ) {
 
 			const targetLength = builder.getTypeLength( targetNode.node.getNodeType( builder ) );
-			const assignDifferentVector = vectorComponents.join( '' ).slice( 0, targetLength ) !== targetNode.components;
+			const assignDiferentVector = vectorComponents.join( '' ).slice( 0, targetLength ) !== targetNode.components;
 
-			return assignDifferentVector;
+			return assignDiferentVector;
 
 		}
 
@@ -162,15 +126,6 @@ class AssignNode extends TempNode {
 
 export default AssignNode;
 
-/**
- * TSL function for creating an assign node.
- *
- * @tsl
- * @function
- * @param {Node} targetNode - The target node.
- * @param {Node} sourceNode - The source type.
- * @returns {AssignNode}
- */
-export const assign = /*@__PURE__*/ nodeProxy( AssignNode ).setParameterLength( 2 );
+export const assign = /*@__PURE__*/ nodeProxy( AssignNode );
 
 addMethodChaining( 'assign', assign );

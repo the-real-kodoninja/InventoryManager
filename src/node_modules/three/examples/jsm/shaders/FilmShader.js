@@ -1,13 +1,3 @@
-/** @module FilmShader */
-
-/**
- * TODO
- *
- * Used by {@link FilmPass}.
- *
- * @constant
- * @type {ShaderMaterial~Shader}
- */
 const FilmShader = {
 
 	name: 'FilmShader',

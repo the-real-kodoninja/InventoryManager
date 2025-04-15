@@ -6,8 +6,9 @@ import SplitNode from '../utils/SplitNode.js';
 import SetNode from '../utils/SetNode.js';
 import FlipNode from '../utils/FlipNode.js';
 import ConstNode from '../core/ConstNode.js';
-import MemberNode from '../utils/MemberNode.js';
 import { getValueFromType, getValueType } from '../core/NodeUtils.js';
+
+//
 
 let currentStack = null;
 
@@ -17,12 +18,12 @@ export function addMethodChaining( name, nodeElement ) {
 
 	if ( NodeElements.has( name ) ) {
 
-		console.warn( `THREE.TSL: Redefinition of method chaining '${ name }'.` );
+		console.warn( `Redefinition of method chaining ${ name }` );
 		return;
 
 	}
 
-	if ( typeof nodeElement !== 'function' ) throw new Error( `THREE.TSL: Node element ${ name } is not a function` );
+	if ( typeof nodeElement !== 'function' ) throw new Error( `Node element ${ name } is not a function` );
 
 	NodeElements.set( name, nodeElement );
 
@@ -110,12 +111,6 @@ const shaderNodeHandler = {
 				// accessing array
 
 				return nodeObject( new ArrayElementNode( nodeObj, new ConstNode( Number( prop ), 'uint' ) ) );
-
-			} else if ( /^get$/.test( prop ) === true ) {
-
-				// accessing properties
-
-				return ( value ) => nodeObject( new MemberNode( nodeObj, value ) );
 
 			}
 
@@ -213,38 +208,11 @@ const ShaderNodeProxy = function ( NodeClass, scope = null, factor = null, setti
 
 	const assignNode = ( node ) => nodeObject( settings !== null ? Object.assign( node, settings ) : node );
 
-	let fn, name = scope, minParams, maxParams;
-
-	function verifyParamsLimit( params ) {
-
-		let tslName;
-
-		if ( name ) tslName = /[a-z]/i.test( name ) ? name + '()' : name;
-		else tslName = NodeClass.type;
-
-		if ( minParams !== undefined && params.length < minParams ) {
-
-			console.error( `THREE.TSL: "${ tslName }" parameter length is less than minimum required.` );
-
-			return params.concat( new Array( minParams - params.length ).fill( 0 ) );
-
-		} else if ( maxParams !== undefined && params.length > maxParams ) {
-
-			console.error( `THREE.TSL: "${ tslName }" parameter length exceeds limit.` );
-
-			return params.slice( 0, maxParams );
-
-		}
-
-		return params;
-
-	}
-
 	if ( scope === null ) {
 
-		fn = ( ...params ) => {
+		return ( ...params ) => {
 
-			return assignNode( new NodeClass( ...nodeArray( verifyParamsLimit( params ) ) ) );
+			return assignNode( new NodeClass( ...nodeArray( params ) ) );
 
 		};
 
@@ -252,40 +220,21 @@ const ShaderNodeProxy = function ( NodeClass, scope = null, factor = null, setti
 
 		factor = nodeObject( factor );
 
-		fn = ( ...params ) => {
+		return ( ...params ) => {
 
-			return assignNode( new NodeClass( scope, ...nodeArray( verifyParamsLimit( params ) ), factor ) );
+			return assignNode( new NodeClass( scope, ...nodeArray( params ), factor ) );
 
 		};
 
 	} else {
 
-		fn = ( ...params ) => {
+		return ( ...params ) => {
 
-			return assignNode( new NodeClass( scope, ...nodeArray( verifyParamsLimit( params ) ) ) );
+			return assignNode( new NodeClass( scope, ...nodeArray( params ) ) );
 
 		};
 
 	}
-
-	fn.setParameterLength = ( ...params ) => {
-
-		if ( params.length === 1 ) minParams = maxParams = params[ 0 ];
-		else if ( params.length === 2 ) [ minParams, maxParams ] = params;
-
-		return fn;
-
-	};
-
-	fn.setName = ( value ) => {
-
-		name = value;
-
-		return fn;
-
-	};
-
-	return fn;
 
 };
 
@@ -309,12 +258,6 @@ class ShaderCallNodeInternal extends Node {
 	getNodeType( builder ) {
 
 		return this.shaderNode.nodeType || this.getOutputNode( builder ).getNodeType( builder );
-
-	}
-
-	getMemberType( builder, name ) {
-
-		return this.getOutputNode( builder ).getMemberType( builder, name );
 
 	}
 
@@ -351,14 +294,18 @@ class ShaderCallNodeInternal extends Node {
 
 			}
 
-			builder.addInclude( functionNode );
+			if ( builder.currentFunctionNode !== null ) {
+
+				builder.currentFunctionNode.includes.push( functionNode );
+
+			}
 
 			result = nodeObject( functionNode.call( inputNodes ) );
 
 		} else {
 
 			const jsFunc = shaderNode.jsFunc;
-			const outputNode = inputNodes !== null || jsFunc.length > 1 ? jsFunc( inputNodes || [], builder ) : jsFunc( builder );
+			const outputNode = inputNodes !== null ? jsFunc( inputNodes, builder ) : jsFunc( builder );
 
 			result = nodeObject( outputNode );
 
@@ -560,35 +507,7 @@ export const nodeArray = ( val, altType = null ) => new ShaderNodeArray( val, al
 export const nodeProxy = ( ...params ) => new ShaderNodeProxy( ...params );
 export const nodeImmutable = ( ...params ) => new ShaderNodeImmutable( ...params );
 
-let fnId = 0;
-
-export const Fn = ( jsFunc, layout = null ) => {
-
-	let nodeType = null;
-
-	if ( layout !== null ) {
-
-		if ( typeof layout === 'object' ) {
-
-			nodeType = layout.return;
-
-		} else {
-
-			if ( typeof layout === 'string' ) {
-
-				nodeType = layout;
-
-			} else {
-
-				console.error( 'THREE.TSL: Invalid layout type.' );
-
-			}
-
-			layout = null;
-
-		}
-
-	}
+export const Fn = ( jsFunc, nodeType ) => {
 
 	const shaderNode = new ShaderNode( jsFunc, nodeType );
 
@@ -630,50 +549,13 @@ export const Fn = ( jsFunc, layout = null ) => {
 
 	};
 
-	if ( layout !== null ) {
-
-		if ( typeof layout.inputs !== 'object' ) {
-
-			const fullLayout = {
-				name: 'fn' + fnId ++,
-				type: nodeType,
-				inputs: []
-			};
-
-			for ( const name in layout ) {
-
-				if ( name === 'return' ) continue;
-
-				fullLayout.inputs.push( {
-					name: name,
-					type: layout[ name ]
-				} );
-
-			}
-
-			layout = fullLayout;
-
-		}
-
-		fn.setLayout( layout );
-
-	}
-
 	return fn;
 
 };
 
-/**
- * @tsl
- * @function
- * @deprecated since r168. Use {@link Fn} instead.
- *
- * @param {...any} params
- * @returns {Function}
- */
 export const tslFn = ( ...params ) => { // @deprecated, r168
 
-	console.warn( 'THREE.TSL: tslFn() has been renamed to Fn().' );
+	console.warn( 'TSL.ShaderNode: tslFn() has been renamed to Fn().' );
 	return Fn( ...params );
 
 };
@@ -770,7 +652,7 @@ addMethodChaining( 'toMat4', mat4 );
 
 // basic nodes
 
-export const element = /*@__PURE__*/ nodeProxy( ArrayElementNode ).setParameterLength( 2 );
+export const element = /*@__PURE__*/ nodeProxy( ArrayElementNode );
 export const convert = ( node, types ) => nodeObject( new ConvertNode( nodeObject( node ), types ) );
 export const split = ( node, channels ) => nodeObject( new SplitNode( nodeObject( node ), channels ) );
 

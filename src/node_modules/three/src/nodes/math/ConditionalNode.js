@@ -2,19 +2,6 @@ import Node from '../core/Node.js';
 import { property } from '../core/PropertyNode.js';
 import { addMethodChaining, nodeProxy } from '../tsl/TSLCore.js';
 
-/**
- * Represents a logical `if/else` statement. Can be used as an alternative
- * to the `If()`/`Else()` syntax.
- *
- * The corresponding TSL `select()` looks like so:
- * ```js
- * velocity = position.greaterThanEqual( limit ).select( velocity.negate(), velocity );
- * ```
- * The `select()` method is called in a chaining fashion on a condition. The parameter nodes of `select()`
- * determine the outcome of the entire statement.
- *
- * @augments Node
- */
 class ConditionalNode extends Node {
 
 	static get type() {
@@ -23,67 +10,24 @@ class ConditionalNode extends Node {
 
 	}
 
-	/**
-	 * Constructs a new conditional node.
-	 *
-	 * @param {Node} condNode - The node that defines the condition.
-	 * @param {Node} ifNode - The node that is evaluate when the condition ends up `true`.
-	 * @param {?Node} [elseNode=null] - The node that is evaluate when the condition ends up `false`.
-	 */
 	constructor( condNode, ifNode, elseNode = null ) {
 
 		super();
 
-		/**
-		 * The node that defines the condition.
-		 *
-		 * @type {Node}
-		 */
 		this.condNode = condNode;
 
-		/**
-		 * The node that is evaluate when the condition ends up `true`.
-		 *
-		 * @type {Node}
-		 */
 		this.ifNode = ifNode;
-
-		/**
-		 * The node that is evaluate when the condition ends up `false`.
-		 *
-		 * @type {?Node}
-		 * @default null
-		 */
 		this.elseNode = elseNode;
 
 	}
 
-	/**
-	 * This method is overwritten since the node type is inferred from the if/else
-	 * nodes.
-	 *
-	 * @param {NodeBuilder} builder - The current node builder.
-	 * @return {string} The node type.
-	 */
 	getNodeType( builder ) {
 
-		const { ifNode, elseNode } = builder.getNodeProperties( this );
+		const ifType = this.ifNode.getNodeType( builder );
 
-		if ( ifNode === undefined ) {
+		if ( this.elseNode !== null ) {
 
-			// fallback setup
-
-			this.setup( builder );
-
-			return this.getNodeType( builder );
-
-		}
-
-		const ifType = ifNode.getNodeType( builder );
-
-		if ( elseNode !== null ) {
-
-			const elseType = elseNode.getNodeType( builder );
+			const elseType = this.elseNode.getNodeType( builder );
 
 			if ( builder.getTypeLength( elseType ) > builder.getTypeLength( ifType ) ) {
 
@@ -133,7 +77,6 @@ class ConditionalNode extends Node {
 
 		const { condNode, ifNode, elseNode } = builder.getNodeProperties( this );
 
-		const functionNode = builder.currentFunctionNode;
 		const needsOutput = output !== 'void';
 		const nodeProperty = needsOutput ? property( type ).build( builder ) : '';
 
@@ -154,14 +97,6 @@ class ConditionalNode extends Node {
 			} else {
 
 				ifSnippet = 'return ' + ifSnippet + ';';
-
-				if ( functionNode === null ) {
-
-					console.warn( 'THREE.TSL: Return statement used in an inline \'Fn()\'. Define a layout struct to allow return values.' );
-
-					ifSnippet = '// ' + ifSnippet;
-
-				}
 
 			}
 
@@ -185,14 +120,6 @@ class ConditionalNode extends Node {
 
 					elseSnippet = 'return ' + elseSnippet + ';';
 
-					if ( functionNode === null ) {
-
-						console.warn( 'THREE.TSL: Return statement used in an inline \'Fn()\'. Define a layout struct to allow return values.' );
-
-						elseSnippet = '// ' + elseSnippet;
-
-					}
-
 				}
 
 			}
@@ -213,33 +140,15 @@ class ConditionalNode extends Node {
 
 export default ConditionalNode;
 
-/**
- * TSL function for creating a conditional node.
- *
- * @tsl
- * @function
- * @param {Node} condNode - The node that defines the condition.
- * @param {Node} ifNode - The node that is evaluate when the condition ends up `true`.
- * @param {?Node} [elseNode=null] - The node that is evaluate when the condition ends up `false`.
- * @returns {ConditionalNode}
- */
-export const select = /*@__PURE__*/ nodeProxy( ConditionalNode ).setParameterLength( 2, 3 );
+export const select = /*@__PURE__*/ nodeProxy( ConditionalNode );
 
 addMethodChaining( 'select', select );
 
-// Deprecated
+//
 
-/**
- * @tsl
- * @function
- * @deprecated since r168. Use {@link select} instead.
- *
- * @param {...any} params
- * @returns {ConditionalNode}
- */
 export const cond = ( ...params ) => { // @deprecated, r168
 
-	console.warn( 'THREE.TSL: cond() has been renamed to select().' );
+	console.warn( 'TSL.ConditionalNode: cond() has been renamed to select().' );
 	return select( ...params );
 
 };

@@ -9,21 +9,8 @@ import {
 } from 'three';
 import { FullScreenQuad } from '../postprocessing/Pass.js';
 
-/**
- * A class that creates an anaglyph effect.
- *
- * Note that this class can only be used with {@link WebGLRenderer}.
- * When using {@link WebGPURenderer}, use {@link AnaglyphPassNode}.
- */
 class AnaglyphEffect {
 
-	/**
-	 * Constructs a new anaglyph effect.
-	 *
-	 * @param {WebGLRenderer} renderer - The renderer.
-	 * @param {number} width - The width of the effect in physical pixels.
-	 * @param {number} height - The height of the effect in physical pixels.
-	 */
 	constructor( renderer, width = 512, height = 512 ) {
 
 		// Dubois matrices from https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.7.6968&rep=rep1&type=pdf#page=4
@@ -107,12 +94,6 @@ class AnaglyphEffect {
 
 		const _quad = new FullScreenQuad( _material );
 
-		/**
-		 * Resizes the effect.
-		 *
-		 * @param {number} width - The width of the effect in logical pixels.
-		 * @param {number} height - The height of the effect in logical pixels.
-		 */
 		this.setSize = function ( width, height ) {
 
 			renderer.setSize( width, height );
@@ -124,13 +105,6 @@ class AnaglyphEffect {
 
 		};
 
-		/**
-		 * When using this effect, this method should be called instead of the
-		 * default {@link WebGLRenderer#render}.
-		 *
-		 * @param {Object3D} scene - The scene to render.
-		 * @param {Camera} camera - The camera.
-		 */
 		this.render = function ( scene, camera ) {
 
 			const currentRenderTarget = renderer.getRenderTarget();
@@ -156,10 +130,6 @@ class AnaglyphEffect {
 
 		};
 
-		/**
-		 * Frees internal resources. This method should be called
-		 * when the effect is no longer required.
-		 */
 		this.dispose = function () {
 
 			_renderTargetL.dispose();

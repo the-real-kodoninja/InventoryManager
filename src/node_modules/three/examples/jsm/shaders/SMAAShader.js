@@ -5,19 +5,9 @@ import {
 /**
  * WebGL port of Subpixel Morphological Antialiasing (SMAA) v2.8
  * Preset: SMAA 1x Medium (with color edge detection)
- *
- * References:
- * - {@link https://github.com/iryoku/smaa/releases/tag/v2.8}
- *
- * @module SMAAShader
+ * https://github.com/iryoku/smaa/releases/tag/v2.8
  */
 
-/**
- * SMAA Edges shader.
- *
- * @constant
- * @type {ShaderMaterial~Shader}
- */
 const SMAAEdgesShader = {
 
 	name: 'SMAAEdgesShader',
@@ -125,12 +115,6 @@ const SMAAEdgesShader = {
 
 };
 
-/**
- * SMAA Weights shader.
- *
- * @constant
- * @type {ShaderMaterial~Shader}
- */
 const SMAAWeightsShader = {
 
 	name: 'SMAAWeightsShader',
@@ -387,12 +371,6 @@ const SMAAWeightsShader = {
 
 };
 
-/**
- * SMAA Blend shader.
- *
- * @constant
- * @type {ShaderMaterial~Shader}
- */
 const SMAABlendShader = {
 
 	name: 'SMAABlendShader',

@@ -41,35 +41,8 @@ import {
 } from 'three';
 import { TGALoader } from '../loaders/TGALoader.js';
 
-/**
- * A loader for the Collada format.
- *
- * The Collada format is very complex so this loader only supports a subset of what
- * is defined in the [official specification]{@link https://www.khronos.org/files/collada_spec_1_5.pdf}.
- *
- * Assets with a Z-UP coordinate system are transformed it into Y-UP by a simple rotation.
- * The vertex data are not converted.
- *
- * ```js
- * const loader = new ColladaLoader();
- *
- * const result = await loader.loadAsync( './models/collada/elf/elf.dae' );
- * scene.add( result.scene );
- * ```
- *
- * @augments Loader
- */
 class ColladaLoader extends Loader {
 
-	/**
-	 * Starts loading from the given URL and passes the loaded Collada asset
-	 * to the `onLoad()` callback.
-	 *
-	 * @param {string} url - The path/URL of the file to be loaded. This can also be a data URI.
-	 * @param {function({scene:Group,animations:Array<AnimationClip>,kinematics:Object})} onLoad - Executed when the loading process has been finished.
-	 * @param {onProgressCallback} onProgress - Executed while the loading is in progress.
-	 * @param {onErrorCallback} onError - Executed when errors occur.
-	 */
 	load( url, onLoad, onProgress, onError ) {
 
 		const scope = this;
@@ -106,14 +79,6 @@ class ColladaLoader extends Loader {
 
 	}
 
-	/**
-	 * Parses the given Collada data and returns a result oject holding the parsed scene,
-	 * an array of animation clips and kinematics.
-	 *
-	 * @param {string} text - The raw Collada data as a string.
-	 * @param {string} path - The asset path.
-	 * @return {{scene:Group,animations:Array<AnimationClip>,kinematics:Object}} An object representing the parsed asset.
-	 */
 	parse( text, path ) {
 
 		function getElementsByTagName( xml, name ) {
@@ -334,7 +299,7 @@ class ColladaLoader extends Loader {
 
 			if ( hasChildren === false ) {
 
-				// since 'id' attributes can be optional, it's necessary to generate a UUID for unique assignment
+				// since 'id' attributes can be optional, it's necessary to generate a UUID for unqiue assignment
 
 				library.animations[ xml.getAttribute( 'id' ) || MathUtils.generateUUID() ] = data;
 
@@ -1012,7 +977,7 @@ class ColladaLoader extends Loader {
 				}
 
 				// we sort the joints in descending order based on the weights.
-				// this ensures, we only proceed the most important joints of the vertex
+				// this ensures, we only procced the most important joints of the vertex
 
 				vertexSkinData.sort( descending );
 
@@ -1628,7 +1593,7 @@ class ColladaLoader extends Loader {
 
 				}
 
-				// create texture if image is available
+				// create texture if image is avaiable
 
 				if ( image !== null ) {
 
@@ -2427,7 +2392,7 @@ class ColladaLoader extends Loader {
 						break;
 
 					default:
-						console.warn( 'THREE.ColladaLoader: Unknown primitive type:', primitive.type );
+						console.warn( 'THREE.ColladaLoader: Unknow primitive type:', primitive.type );
 
 				}
 
@@ -3469,7 +3434,7 @@ class ColladaLoader extends Loader {
 			let i, j, data;
 
 			// a skeleton can have multiple root bones. collada expresses this
-			// situation with multiple "skeleton" tags per controller instance
+			// situtation with multiple "skeleton" tags per controller instance
 
 			for ( i = 0; i < skeletons.length; i ++ ) {
 
@@ -4006,7 +3971,7 @@ class ColladaLoader extends Loader {
 				} else {
 
 					result += '\n';
-					stack.push( ...node.childNodes );
+					stack.push.apply( stack, node.childNodes );
 
 				}
 

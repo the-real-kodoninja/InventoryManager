@@ -1,11 +1,8 @@
-/** @module LuminosityShader */
-
 /**
- * Luminosity shader.
- *
- * @constant
- * @type {ShaderMaterial~Shader}
+ * Luminosity
+ * http://en.wikipedia.org/wiki/Luminosity
  */
+
 const LuminosityShader = {
 
 	name: 'LuminosityShader',

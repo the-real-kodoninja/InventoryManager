@@ -37,15 +37,6 @@ const perturbNormal2Arb = /*@__PURE__*/ Fn( ( inputs ) => {
 
 } );
 
-/**
- * This class can be used for applying normals maps to materials.
- *
- * ```js
- * material.normalNode = normalMap( texture( normalTex ) );
- * ```
- *
- * @augments TempNode
- */
 class NormalMapNode extends TempNode {
 
 	static get type() {
@@ -54,37 +45,13 @@ class NormalMapNode extends TempNode {
 
 	}
 
-	/**
-	 * Constructs a new normal map node.
-	 *
-	 * @param {Node<vec3>} node - Represents the normal map data.
-	 * @param {?Node<vec2>} [scaleNode=null] - Controls the intensity of the effect.
-	 */
 	constructor( node, scaleNode = null ) {
 
 		super( 'vec3' );
 
-		/**
-		 * Represents the normal map data.
-		 *
-		 * @type {Node<vec3>}
-		 */
 		this.node = node;
-
-		/**
-		 * Controls the intensity of the effect.
-		 *
-		 * @type {?Node<vec2>}
-		 * @default null
-		 */
 		this.scaleNode = scaleNode;
 
-		/**
-		 * The normal map type.
-		 *
-		 * @type {(TangentSpaceNormalMap|ObjectSpaceNormalMap)}
-		 * @default TangentSpaceNormalMap
-		 */
 		this.normalMapType = TangentSpaceNormalMap;
 
 	}
@@ -136,13 +103,4 @@ class NormalMapNode extends TempNode {
 
 export default NormalMapNode;
 
-/**
- * TSL function for creating a normal map node.
- *
- * @tsl
- * @function
- * @param {Node<vec3>} node - Represents the normal map data.
- * @param {?Node<vec2>} [scaleNode=null] - Controls the intensity of the effect.
- * @returns {NormalMapNode}
- */
-export const normalMap = /*@__PURE__*/ nodeProxy( NormalMapNode ).setParameterLength( 1, 2 );
+export const normalMap = /*@__PURE__*/ nodeProxy( NormalMapNode );

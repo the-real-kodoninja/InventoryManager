@@ -2,14 +2,10 @@ import {
 	Vector3
 } from 'three';
 
-/** @module ColorCorrectionShader */
-
 /**
- * Color correction shader.
- *
- * @constant
- * @type {ShaderMaterial~Shader}
+ * Color correction
  */
+
 const ColorCorrectionShader = {
 
 	name: 'ColorCorrectionShader',

@@ -1,15 +1,5 @@
-/**
- * A utility module with basic WebGL 2 capability testing.
- *
- * @hideconstructor
- */
 class WebGL {
 
-	/**
-	 * Returns `true` if WebGL 2 is available.
-	 *
-	 * @return {boolean} Whether WebGL 2 is available or not.
-	 */
 	static isWebGL2Available() {
 
 		try {
@@ -25,13 +15,6 @@ class WebGL {
 
 	}
 
-	/**
-	 * Returns `true` if the given color space is available. This method can only be used
-	 * if WebGL 2 is supported.
-	 *
-	 * @param {string} colorSpace - The color space to test.
-	 * @return {boolean} Whether the given color space is available or not.
-	 */
 	static isColorSpaceAvailable( colorSpace ) {
 
 		try {
@@ -49,21 +32,13 @@ class WebGL {
 
 	}
 
-	/**
-	 * Returns a `div` element representing a formatted error message that can be appended in
-	 * web sites if WebGL 2 isn't supported.
-	 *
-	 * @return {HTMLDivElement} A `div` element representing a formatted error message that WebGL 2 isn't supported.
-	 */
 	static getWebGL2ErrorMessage() {
 
-		return this._getErrorMessage( 2 );
+		return this.getErrorMessage( 2 );
 
 	}
 
-	// private
-
-	static _getErrorMessage( version ) {
+	static getErrorMessage( version ) {
 
 		const names = {
 			1: 'WebGL',
@@ -130,7 +105,7 @@ class WebGL {
 
 		console.warn( 'getWebGLErrorMessage() has been deprecated and will be removed in r178. Use getWebGL2ErrorMessage() instead.' );
 
-		return this._getErrorMessage( 1 );
+		return this.getErrorMessage( 1 );
 
 	}
 

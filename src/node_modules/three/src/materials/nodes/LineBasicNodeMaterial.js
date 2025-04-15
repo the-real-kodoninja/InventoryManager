@@ -4,11 +4,6 @@ import { LineBasicMaterial } from '../LineBasicMaterial.js';
 
 const _defaultValues = /*@__PURE__*/ new LineBasicMaterial();
 
-/**
- * Node material version of {@link LineBasicMaterial}.
- *
- * @augments NodeMaterial
- */
 class LineBasicNodeMaterial extends NodeMaterial {
 
 	static get type() {
@@ -17,23 +12,13 @@ class LineBasicNodeMaterial extends NodeMaterial {
 
 	}
 
-	/**
-	 * Constructs a new line basic node material.
-	 *
-	 * @param {Object} [parameters] - The configuration parameter.
-	 */
 	constructor( parameters ) {
 
 		super();
 
-		/**
-		 * This flag can be used for type testing.
-		 *
-		 * @type {boolean}
-		 * @readonly
-		 * @default true
-		 */
 		this.isLineBasicNodeMaterial = true;
+
+		this.lights = false;
 
 		this.setDefaultValues( _defaultValues );
 
