@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InventoryManager</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <nav>
+                <img src="assets/logo.png" alt="Logo" class="logo" onerror="this.src='https://via.placeholder.com/40';">
+                <ul>
+                    <li><a href="#" id="dashboard">Dashboard</a></li>
+                    <li><a href="#" id="inventory">Inventory</a></li>
+                    <li><a href="#" id="reports">Reports</a></li>
+                    <li><a href="#" id="settings">Settings</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main>
+            <div class="map-container">
+                <div id="map-2d" class="map"></div>
+                <div id="map-3d" class="map hidden"></div>
+                <button id="toggle-view">Toggle 2D/3D</button>
+            </div>
+            <div class="data-list">
+                <h2>Inventory</h2>
+                <table id="inventory-table">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Barcode</th>
+                            <th>Quantity</th>
+                            <th>Location</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+    <script src="node_modules/@svgdotjs/svg.js/dist/svg.min.js"></script>
+    <script src="node_modules/three/build/three.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
