@@ -5,6 +5,7 @@ use tauri::State;
 use std::sync::Mutex;
 use std::fs;
 use yaml_rust2::{Yaml, YamlLoader};
+use rusqlite::{params, Connection, Result};
 
 #[derive(Serialize, Deserialize, Clone)]
 struct Item {
@@ -33,6 +34,7 @@ struct Warehouse {
 
 struct AppState {
     warehouse: Mutex<Warehouse>,
+    db: Mutex<Connection>,
 }
 
 #[tauri::command]
@@ -40,8 +42,55 @@ fn get_warehouse(state: State<AppState>) -> Warehouse {
     state.warehouse.lock().unwrap().clone()
 }
 
+#[tauri::command]
+fn get_inventory(state: State<AppState>) -> Vec<Item> {
+    let db = state.db.lock().unwrap();
+    let mut stmt = db.prepare("SELECT id, name, barcode, quantity FROM items").unwrap();
+    let items = stmt.query_map([], |row| {
+        Ok(Item {
+            id: row.get(0)?,
+            name: row.get(1)?,
+            barcode: row.get(2)?,
+            quantity: row.get(3)?,
+        })
+    }).unwrap().collect::<Result<Vec<Item>>>();
+    items.unwrap()
+}
+
+fn init_db() -> Connection {
+    let conn = Connection::open("inventory.db").expect("Failed to open SQLite database");
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS items (
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL,
+            barcode TEXT NOT NULL,
+            quantity INTEGER NOT NULL
+        )",
+        [],
+    ).expect("Failed to create items table");
+
+    // Seed initial data if empty
+    let count: i64 = conn.query_row("SELECT COUNT(*) FROM items", [], |row| row.get(0)).unwrap();
+    if count == 0 {
+        conn.execute(
+            "INSERT INTO items (id, name, barcode, quantity) VALUES (?1, ?2, ?3, ?4)",
+            params![1, "Widget A", "123456", 50],
+        ).unwrap();
+        conn.execute(
+            "INSERT INTO items (id, name, barcode, quantity) VALUES (?1, ?2, ?3, ?4)",
+            params![2, "Widget B", "789012", 20],
+        ).unwrap();
+        conn.execute(
+            "INSERT INTO items (id, name, barcode, quantity) VALUES (?1, ?2, ?3, ?4)",
+            params![3, "Widget C", "345678", 30],
+        ).unwrap();
+    }
+
+    conn
+}
+
 fn load_warehouse() -> Warehouse {
-    let yaml_str = fs::read_to_string("src/configs/warehouse.yaml")
+    let yaml_str = fs::read_to_string("src-tauri/configs/warehouse.yaml")
         .expect("Failed to read warehouse.yaml");
     let docs = YamlLoader::load_from_str(&yaml_str).expect("Failed to parse YAML");
     let yaml = &docs[0];
@@ -78,12 +127,14 @@ fn load_warehouse() -> Warehouse {
 
 fn main() {
     let warehouse = load_warehouse();
+    let db = init_db();
 
     tauri::Builder::default()
         .manage(AppState {
             warehouse: Mutex::new(warehouse),
+            db: Mutex::new(db),
         })
-        .invoke_handler(tauri::generate_handler![get_warehouse])
+        .invoke_handler(tauri::generate_handler![get_warehouse, get_inventory])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

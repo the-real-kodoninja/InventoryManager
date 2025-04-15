@@ -1,45 +1,70 @@
 import { invoke } from '@tauri-apps/api/tauri';
 import { SVG } from '@svgdotjs/svg.js';
 
-// Mock warehouse layout (3 aisles, 5 bins each)
-const warehouse = [
-    { aisle: 1, bins: Array(5).fill(null).map((_, i) => ({ bin: i + 1, item: i === 2 ? { id: 1, name: "Widget A", barcode: "123456", quantity: 50, location: "Aisle 1, Bin 3" } : null })) },
-    { aisle: 2, bins: Array(5).fill(null).map((_, i) => ({ bin: i + 1, item: i === 4 ? { id: 2, name: "Widget B", barcode: "789012", quantity: 20, location: "Aisle 2, Bin 5" } : null })) },
-    { aisle: 3, bins: Array(5).fill(null).map((_, i) => ({ bin: i + 1, item: i === 0 ? { id: 3, name: "Widget C", barcode: "345678", quantity: 30, location: "Aisle 3, Bin 1" } : null })) },
-];
-
 // Initialize 2D SVG map
 const draw = SVG().addTo('#map-2d').size('100%', '100%');
-warehouse.forEach((aisle, i) => {
-    const y = 50 + i * 150;
-    draw.text(`Aisle ${aisle.aisle}`).move(20, y - 20).fill('#fff');
-    aisle.bins.forEach((bin, j) => {
-        const x = 50 + j * 60;
-        const rect = draw.rect(50, 50).fill(bin.item ? '#00aaff' : '#444').move(x, y);
-        rect.click(() => {
-            const msg = bin.item
-                ? `${bin.item.location}: ${bin.item.quantity} ${bin.item.name}`
-                : `Aisle ${aisle.aisle}, Bin ${bin.bin}: Empty`;
-            alert(msg);
-        }).attr({ 'data-location': `Aisle ${aisle.aisle}, Bin ${bin.bin}` });
-    });
-});
+const tooltip = document.getElementById('tooltip');
+async function renderWarehouse() {
+    try {
+        const warehouse = await invoke('get_warehouse');
+        draw.clear();
+        warehouse.aisles.forEach((aisle, i) => {
+            const y = 50 + i * 150;
+            draw.text(`Aisle ${aisle.id}`).move(20, y - 20).fill('#fff');
+            aisle.bins.forEach((bin, j) => {
+                const x = 50 + j * 60;
+                const rect = draw.rect(50, 50).fill(bin.item ? '#00aaff' : '#444').move(x, y);
+                rect.mouseover((e) => {
+                    rect.fill(bin.item ? '#00ccff' : '#666');
+                    tooltip.innerHTML = bin.item
+                        ? `${bin.item.name}: ${bin.item.quantity}`
+                        : `Aisle ${aisle.id}, Bin ${bin.id}: Empty`;
+                    tooltip.style.left = `${e.clientX + 10}px`;
+                    tooltip.style.top = `${e.clientY + 10}px`;
+                    tooltip.classList.remove('hidden');
+                }).mouseout(() => {
+                    rect.fill(bin.item ? '#00aaff' : '#444');
+                    tooltip.classList.add('hidden');
+                });
+                rect.click(() => {
+                    const msg = bin.item
+                        ? `Aisle ${aisle.id}, Bin ${bin.id}: ${bin.item.quantity} ${bin.item.name}`
+                        : `Aisle ${aisle.id}, Bin ${bin.id}: Empty`;
+                    alert(msg);
+                }).attr({ 'data-location': `Aisle ${aisle.id}, Bin ${bin.id}` });
+            });
+        });
+    } catch (error) {
+        console.error('Failed to load warehouse:', error);
+    }
+}
 
-// Initialize 3D placeholder
+// Initialize 3D warehouse stub
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ canvas: document.createElement('canvas') });
 document.getElementById('map-3d').appendChild(renderer.domElement);
 renderer.setSize(400, 400);
-const geometry = new THREE.BoxGeometry();
-const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-const cube = new THREE.Mesh(geometry, material);
-scene.add(cube);
+
+// Add aisles as boxes
+const aisleGeometry = new THREE.BoxGeometry(2, 0.5, 0.5);
+const aisleMaterial = new THREE.MeshBasicMaterial({ color: 0xaaaaaa });
+const aisles = [
+    new THREE.Mesh(aisleGeometry, aisleMaterial),
+    new THREE.Mesh(aisleGeometry, aisleMaterial),
+    new THREE.Mesh(aisleGeometry, aisleMaterial),
+];
+aisles.forEach((aisle, i) => {
+    aisle.position.set(0, i * 1.5 - 1.5, 0);
+    scene.add(aisle);
+});
+
 camera.position.z = 5;
 function animate() {
     requestAnimationFrame(animate);
-    cube.rotation.x += 0.01;
-    cube.rotation.y += 0.01;
+    aisles.forEach(aisle => {
+        aisle.rotation.y += 0.01;
+    });
     renderer.render(scene, camera);
 }
 animate();
@@ -52,19 +77,19 @@ document.getElementById('toggle-view').addEventListener('click', () => {
     map3d.classList.toggle('hidden');
 });
 
-// Fetch inventory from Rust
+// Populate inventory table
 async function loadInventory() {
     try {
-        const inventory = await invoke('get_inventory');
+        const items = await invoke('get_inventory');
         const tbody = document.querySelector('#inventory-table tbody');
         tbody.innerHTML = '';
-        inventory.forEach(item => {
+        items.forEach(item => {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${item.name}</td>
                 <td>${item.barcode}</td>
                 <td>${item.quantity}</td>
-                <td>${item.location}</td>
+                <td>-</td>
             `;
             tbody.appendChild(row);
         });
@@ -73,4 +98,23 @@ async function loadInventory() {
     }
 }
 
+// Navigation stubs for user tiers
+document.getElementById('dashboard').addEventListener('click', (e) => {
+    e.preventDefault();
+    alert('Dashboard: View KPIs (Manager/Executive only)');
+});
+document.getElementById('inventory').addEventListener('click', (e) => {
+    e.preventDefault();
+    alert('Inventory: Manage items (Associate+)');
+});
+document.getElementById('reports').addEventListener('click', (e) => {
+    e.preventDefault();
+    alert('Reports: Generate analytics (Manager+)');
+});
+document.getElementById('settings').addEventListener('click', (e) => {
+    e.preventDefault();
+    alert('Settings: Configure warehouse (Executive only)');
+});
+
+renderWarehouse();
 loadInventory();

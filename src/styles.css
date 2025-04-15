@@ -108,3 +108,13 @@ th, td {
 th {
     background: #2c2c2c;
 }
+
+.tooltip {
+    position: absolute;
+    background: #2c2c2c;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 10;
+}

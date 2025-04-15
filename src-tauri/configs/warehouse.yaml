@@ -1,0 +1,38 @@
+warehouse:
+  aisles:
+    - id: 1
+      bins:
+        - id: 1
+          item: null
+        - id: 2
+          item: null
+        - id: 3
+          item: { id: 1, name: "Widget A", barcode: "123456", quantity: 50 }
+        - id: 4
+          item: null
+        - id: 5
+          item: null
+    - id: 2
+      bins:
+        - id: 1
+          item: null
+        - id: 2
+          item: null
+        - id: 3
+          item: null
+        - id: 4
+          item: null
+        - id: 5
+          item: { id: 2, name: "Widget B", barcode: "789012", quantity: 20 }
+    - id: 3
+      bins:
+        - id: 1
+          item: { id: 3, name: "Widget C", barcode: "345678", quantity: 30 }
+        - id: 2
+          item: null
+        - id: 3
+          item: null
+        - id: 4
+          item: null
+        - id: 5
+          item: null
